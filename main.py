@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import Tk, ttk
+from tkinter import Tk, ttk, messagebox
 from tkinter import filedialog as fd
 import re
 import ffmpeg
@@ -191,6 +191,7 @@ def do_convert(args: list, total_seconds: int):
 
     progress_bar['value'] = 100
     progress_label.config(text="Done")
+    messagebox.showinfo("Done", "Conversion Done")
 
 
 root = Tk()
