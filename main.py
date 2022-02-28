@@ -177,6 +177,7 @@ def do_convert(args: list, total_seconds: int):
     """
     progress_bar['value'] = 0
     proc = subprocess.Popen(args, stdout=subprocess.PIPE)
+    completed_seconds = 0
     while True:
         line = proc.stdout.readline()
         if not line:
@@ -187,7 +188,9 @@ def do_convert(args: list, total_seconds: int):
             progress_label.config(text=format_seconds(completed_seconds) + "/" + format_seconds(total_seconds))
             progress_bar['value'] = completed_seconds / total_seconds * 100
         elif line.startswith('total_size='):
-            size_label.config(text=sizeof_fmt(int(re.findall('([0-9]+)', line)[0])))
+            size = int(re.findall('([0-9]+)', line)[0])
+            if completed_seconds != 0:
+                size_label.config(text=f"{sizeof_fmt(size)} (~{sizeof_fmt(total_seconds * size / completed_seconds)})")
 
     progress_bar['value'] = 100
     progress_label.config(text="Done")
