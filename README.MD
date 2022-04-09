@@ -14,4 +14,5 @@ This program uses ffmpeg under the hood and uses these configs:
 At first install `ffmpeg` and `requirements.txt` dependencies using pip and then simply run `main.py` using python. I
 developed this app with python3.10 not sure what is the minimum version of the app.
 
-I recommend using a terminal to open the script because the logs will be logged to terminal. 
+You can also drag and drop the input file into the py file in order to automatically select the
+input file.

@@ -2,9 +2,11 @@ import tkinter
 from tkinter import Tk, ttk, messagebox
 from tkinter import filedialog as fd
 import re
+from typing import Tuple, Union
 import ffmpeg
 import threading
 import subprocess
+import sys
 
 MAX_FRAME_RATE = 10
 MAX_HEIGHT = 720
@@ -85,20 +87,27 @@ def sizeof_fmt(num) -> str:
     return f"{num:.1f}YiB"
 
 
-def select_input():
+def check_args(_a):
+    root.unbind('<Map>')
+    if len(sys.argv) > 1:
+        select_input(sys.argv[1])
+
+
+def select_input(input_file: Union[None, str] = None):
     """
     The main entry point of choose file click;
     This function gets the input file, gets the output filename and does the conversion
     """
-    filetypes = (
-        ('WebM', '*.webm'),
-        ('All files', '*.*')
-    )
-    filename = fd.askopenfilename(
-        title='Open input',
-        filetypes=filetypes)
-    if filename == "":
-        return  # Do nothing
+    if input_file == None:
+        filetypes = (
+            ('WebM', '*.webm'),
+            ('All files', '*.*')
+        )
+        input_file = fd.askopenfilename(
+            title='Open input',
+            filetypes=filetypes)
+        if input_file == "":
+            return  # Do nothing
     # Select output
     filetypes = [("mp4", '*.mp4')]
     out_name = fd.asksaveasfilename(
@@ -109,7 +118,7 @@ def select_input():
         return  # Do nothing
     if not out_name.endswith('.mp4'):
         out_name += '.mp4'
-    threading.Thread(target=convert_file, args=(filename, out_name)).start()
+    threading.Thread(target=convert_file, args=(input_file, out_name)).start()
 
 
 def convert_file(input_file: str, output_file: str):
@@ -156,7 +165,7 @@ def analyze_file(input_file: str) -> ToChangeParams:
         running_time)
 
 
-def get_audio_bitrate_and_running_time(input_file: str) -> (int, int):
+def get_audio_bitrate_and_running_time(input_file: str) -> Tuple[int, int]:
     """
     This function gets the audio bitrate and the running time of the file
     :param input_file: The input file location
@@ -200,6 +209,7 @@ def do_convert(args: list, total_seconds: int):
 root = Tk()
 root.resizable(False, False)
 root.title('Convertor')
+root.bind('<Map>', check_args)
 frm = ttk.Frame(root)
 frm.grid(pady=10)
 select_file_button = ttk.Button(frm, text="Select File", command=select_input)
